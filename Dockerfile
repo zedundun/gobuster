@@ -1,6 +1,5 @@
 FROM centos:7
 MAINTAINER The CentOS Project
-ENTRYPOINT top -b
 
 RUN yum install -y gcc make wget openssl-devel zlib-devel bzip2-devel libffi-devel libffi-devel cairo-devel pango-devel.x86_64
 
@@ -20,3 +19,5 @@ RUN mkdir -p /app/sumeru-web
 # install python lib env
 WORKDIR /app
 ADD . /app/sumeru-web
+
+ENTRYPOINT top -b
