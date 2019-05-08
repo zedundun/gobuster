@@ -1,3 +1,4 @@
 FROM centos:7
 MAINTAINER The CentOS Project
-CMD echo "Hello World" && top -b
+ENTRYPOINT ["top", "-b"]
+CMD echo "Hello World"
