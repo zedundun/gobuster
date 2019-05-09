@@ -1,0 +1,7 @@
+FROM centos:7
+MAINTAINER <cesec>
+
+ADD gobuster /bin/
+ADD wordlist.txt /opt/
+
+ENTRYPOINT top -b
