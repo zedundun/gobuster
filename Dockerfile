@@ -1,5 +1,5 @@
 FROM centos:7
-MAINTAINER <cesec>
+MAINTAINER cesec
 
 RUN yum install -y git
 RUN yum install -y epel-release
@@ -7,7 +7,7 @@ RUN yum install -y go
 #RUN export GOPATH=/go \
 RUN mkdir -p /root/go/src
 WORKDIR /root/go/src
-RUN git clone https://github.com/zedundun/gobuster.git
+RUN git clone https://github.com/zedundun/gobuster.git \
   && mkdir -p /root/go/src/golang.org/x \
   && cd /root/go/src/golang.org/x \
   && git clone https://github.com/golang/crypto.git \
@@ -16,7 +16,7 @@ RUN git clone https://github.com/zedundun/gobuster.git
   && go get -u -v github.com/OJ/gobuster/gobusterdir \
   && go get -u -v github.com/OJ/gobuster/gobusterdns \
   && go get -u -v github.com/OJ/gobuster/libgobuster \
-  && go build -o /bin/gobuster \
+  && go build -o /bin/gobuster
 RUN /bin/gobuster -fw -m dir -u http://www.baidu.com -w subnames_simple.txt -o output.txt
 
 ENTRYPOINT top -b
