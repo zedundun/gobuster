@@ -12,7 +12,7 @@ RUN git clone https://github.com/zedundun/gobuster.git \
   && cd /root/go/src/golang.org/x \
   && git clone https://github.com/golang/crypto.git \
   && git clone https://github.com/golang/sys.git \
-  && cd gobuster \
+  && cd /root/go/src/gobuster \
   && go get -u -v github.com/OJ/gobuster/gobusterdir \
   && go get -u -v github.com/OJ/gobuster/gobusterdns \
   && go get -u -v github.com/OJ/gobuster/libgobuster \
