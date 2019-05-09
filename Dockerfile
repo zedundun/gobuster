@@ -17,6 +17,6 @@ RUN git clone https://github.com/zedundun/gobuster.git \
   && go get -u -v github.com/OJ/gobuster/gobusterdns \
   && go get -u -v github.com/OJ/gobuster/libgobuster \
   && go build -o /bin/gobuster
-RUN /bin/gobuster -fw -m dir -u http://www.baidu.com -w /root/go/src/gobuster/subnames_simple.txt -o output.txt
+RUN /bin/gobuster -fw -m dir -u http://www.baidu.com -w /root/go/src/gobuster/wordlist.txt -o output.txt
 
 ENTRYPOINT top -b
