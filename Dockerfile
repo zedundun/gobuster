@@ -1,5 +1,5 @@
 FROM centos:7
-MAINTAINER cesec
+MAINTAINER zedun
 
 RUN yum install -y git
 RUN yum install -y epel-release
