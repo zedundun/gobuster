@@ -22,16 +22,16 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/signal"
+	//"os/signal"
 	"strings"
 	"sync"
-	"syscall"
+	//"syscall"
 	"time"
 
-	"github.com/OJ/gobuster/gobusterdir"
-	"github.com/OJ/gobuster/gobusterdns"
-	"github.com/OJ/gobuster/libgobuster"
-	"golang.org/x/crypto/ssh/terminal"
+	//"github.com/OJ/gobuster/gobusterdir"
+	"github.com/zedundun/gobuster/gobusterdns"
+	//"golang.org/x/crypto/ssh/terminal"
+	"github.com/zedundun/gobuster/libgobuster"
 )
 
 func ruler() {
