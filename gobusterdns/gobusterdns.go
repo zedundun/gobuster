@@ -6,8 +6,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/OJ/gobuster/libgobuster"
+	//"github.com/OJ/gobuster/libgobuster"
 	"github.com/google/uuid"
+	"github.com/zedundun/gobuster/libgobuster"
 )
 
 // GobusterDNS is the main type to implement the interface

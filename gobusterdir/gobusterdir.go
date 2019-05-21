@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/OJ/gobuster/libgobuster"
+	//"github.com/OJ/gobuster/libgobuster"
 	"github.com/google/uuid"
+	"github.com/zedundun/gobuster/libgobuster"
 )
 
 // GobusterDir is the main type to implement the interface
