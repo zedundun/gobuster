@@ -109,10 +109,10 @@ func (g *Gobuster) GetProgress() string {
 	var output string
 	g.mu.RLock()
 	if g.Opts.Wordlist == "-" {
-		fmt.printf(output, "Progress: %d", g.requestsIssued)
+		fmt.Printf(output, "Progress: %d", g.requestsIssued)
 		// only print status if we already read in the wordlist
 	} else if g.requestsExpected > 0 {
-		fmt.printf(output, "Progress: %d / %d (%3.2f%%)", g.requestsIssued, g.requestsExpected, float32(g.requestsIssued)*100.0/float32(g.requestsExpected))
+		fmt.Printf(output, "Progress: %d / %d (%3.2f%%)", g.requestsIssued, g.requestsExpected, float32(g.requestsIssued)*100.0/float32(g.requestsExpected))
 	}
 	g.mu.RUnlock()
 	return output
