@@ -104,6 +104,20 @@ func (g *Gobuster) PrintProgress() {
 	}
 }
 
+// outputs the current wordlist progress
+func (g *Gobuster) GetProgress() string {
+	var output string
+	g.mu.RLock()
+	if g.Opts.Wordlist == "-" {
+		fmt.Fprintf(output, "Progress: %d", g.requestsIssued)
+		// only print status if we already read in the wordlist
+	} else if g.requestsExpected > 0 {
+		fmt.Fprintf(output, "Progress: %d / %d (%3.2f%%)", g.requestsIssued, g.requestsExpected, float32(g.requestsIssued)*100.0/float32(g.requestsExpected))
+	}
+	g.mu.RUnlock()
+	return output
+}
+
 // ClearProgress removes the last status line from stderr
 func (g *Gobuster) ClearProgress() {
 	fmt.Fprint(os.Stderr, resetTerminal())

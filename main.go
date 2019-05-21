@@ -105,6 +105,69 @@ func writeToFile(f *os.File, output string) error {
 func main() {
 	var outputFilename string
 	o := libgobuster.NewOptions()
+	flag.StringVar(&outputFilename, "o", "/tmp/aaa.txt", "Output file to write results to (defaults to stdout)")
+	flag.IntVar(&o.Threads, "t", 10, "Number of concurrent threads")
+	flag.StringVar(&o.Mode, "m", "dns", "Directory/File mode (dir) or DNS mode (dns)")
+	flag.StringVar(&o.Wordlist, "w", "wordlist.txt", "Path to the wordlist")
+
+	//flag.StringVar(&o.StatusCodes, "s", "200,204,301,302,307,403", "Positive status codes (dir mode only)")
+	flag.StringVar(&o.URL, "u", "", "The target URL or Domain")
+	//flag.StringVar(&o.Cookies, "c", "", "Cookies to use for the requests (dir mode only)")
+	//flag.StringVar(&o.Username, "U", "", "Username for Basic Auth (dir mode only)")
+	//flag.StringVar(&o.Password, "P", "", "Password for Basic Auth (dir mode only)")
+	//flag.StringVar(&o.Extensions, "x", "", "File extension(s) to search for (dir mode only)")
+	//flag.StringVar(&o.UserAgent, "a", "", "Set the User-Agent string (dir mode only)")
+	//flag.StringVar(&o.Proxy, "p", "", "Proxy to use for requests [http(s)://host:port] (dir mode only)")
+	//flag.DurationVar(&o.Timeout, "to", 10*time.Second, "HTTP Timeout in seconds (dir mode only)")
+	flag.BoolVar(&o.Verbose, "v", false, "Verbose output (errors)")
+	flag.BoolVar(&o.ShowIPs, "i", false, "Show IP addresses (dns mode only)")
+	flag.BoolVar(&o.ShowCNAME, "cn", false, "Show CNAME records (dns mode only, cannot be used with '-i' option)")
+	flag.BoolVar(&o.FollowRedirect, "r", false, "Follow redirects")
+	flag.BoolVar(&o.Quiet, "q", false, "Don't print the banner and other noise")
+	flag.BoolVar(&o.Expanded, "e", false, "Expanded mode, print full URLs")
+	flag.BoolVar(&o.NoStatus, "n", false, "Don't print status codes")
+	//flag.BoolVar(&o.IncludeLength, "l", false, "Include the length of the body in the output (dir mode only)")
+	//flag.BoolVar(&o.UseSlash, "f", false, "Append a forward-slash to each directory request (dir mode only)")
+	flag.BoolVar(&o.WildcardForced, "fw", false, "Force continued operation when wildcard found")
+	//flag.BoolVar(&o.InsecureSSL, "k", false, "Skip SSL certificate verification")
+	flag.BoolVar(&o.NoProgress, "np", false, "Don't display progress")
+
+	flag.Parse()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	var plugin libgobuster.GobusterPlugin
+	plugin = gobusterdns.GobusterDNS{}
+	gobuster, err := libgobuster.NewGobuster(ctx, o, plugin)
+	if err != nil {
+		log.Fatalf("[!] %v", err)
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go errorWorker(gobuster, &wg)
+	go resultWorker(gobuster, outputFilename, &wg)
+
+	if err := gobuster.Start(); err != nil {
+		log.Printf("[!] %v", err)
+	} else {
+		// call cancel func to free ressources and stop progressFunc
+		cancel()
+		// wait for all output funcs to finish
+		wg.Wait()
+	}
+
+	output := gobuster.GetProgress()
+	fmt.Println("progress:", output)
+
+	//read result and return
+}
+
+/*
+func main() {
+	var outputFilename string
+	o := libgobuster.NewOptions()
 	flag.IntVar(&o.Threads, "t", 10, "Number of concurrent threads")
 	flag.StringVar(&o.Mode, "m", "dir", "Directory/File mode (dir) or DNS mode (dns)")
 	flag.StringVar(&o.Wordlist, "w", "", "Path to the wordlist")
@@ -214,3 +277,4 @@ func main() {
 		ruler()
 	}
 }
+*/
