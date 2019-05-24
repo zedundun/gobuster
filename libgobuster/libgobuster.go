@@ -16,6 +16,8 @@ const (
 	VERSION = "2.0.1"
 )
 
+var dnsServer string
+
 // SetupFunc is the "setup" function prototype for implementations
 type SetupFunc func(*Gobuster) error
 
@@ -48,8 +50,13 @@ type GobusterPlugin interface {
 	ResultToString(*Gobuster, *Result) (*string, error)
 }
 
+func dialer(ctx context.Context, network, address string) (net.Conn, error) {
+	d := net.Dialer{}
+	return d.DialContext(ctx, "udp", dnsServer)
+}
+
 // NewGobuster returns a new Gobuster object
-func NewGobuster(c context.Context, opts *Options, plugin GobusterPlugin) (*Gobuster, error) {
+func NewGobuster(c context.Context, opts *Options, plugin GobusterPlugin, server string) (*Gobuster, error) {
 	// validate given options
 	multiErr := opts.validate()
 	if multiErr != nil {
@@ -71,6 +78,16 @@ func NewGobuster(c context.Context, opts *Options, plugin GobusterPlugin) (*Gobu
 
 	g.resultChan = make(chan Result)
 	g.errorChan = make(chan error)
+
+	if server == "default" {
+		g.resolver = net.DefaultResolver
+	} else {
+		dnsServer = server
+		g.resolver = &net.Resolver{
+			PreferGo: true,
+			Dial:     dialer,
+		}
+	}
 
 	return &g, nil
 }
@@ -132,12 +149,12 @@ func (g *Gobuster) GetRequest(url string) (*int, *int64, error) {
 
 // DNSLookup looks up a domain via system default DNS servers
 func (g *Gobuster) DNSLookup(domain string) ([]string, error) {
-	return net.LookupHost(domain)
+	return g.resolver.LookupHost(domain)
 }
 
 // DNSLookupCname looks up a CNAME record via system default DNS servers
 func (g *Gobuster) DNSLookupCname(domain string) (string, error) {
-	return net.LookupCNAME(domain)
+	return g.resolver.LookupCNAME(domain)
 }
 
 func (g *Gobuster) worker(wordChan <-chan string, wg *sync.WaitGroup) {
@@ -197,6 +214,7 @@ func (g *Gobuster) getWordlist() (*bufio.Scanner, error) {
 // Start the busting of the website with the given
 // set of settings from the command line.
 func (g *Gobuster) Start() error {
+	fmt.Println("start")
 	if err := g.plugin.Setup(g); err != nil {
 		return err
 	}

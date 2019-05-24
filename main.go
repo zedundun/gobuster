@@ -101,8 +101,9 @@ func writeToFile(f *os.File, output string) error {
 }
 
 func main() {
-	var outputFilename string
+	var outputFilename, dnsServer string
 	o := libgobuster.NewOptions()
+	flag.StringVar(&dnsServer, "server", "default", "Address of DNS server")
 	flag.StringVar(&outputFilename, "o", "/tmp/aaa.txt", "Output file to write results to (defaults to stdout)")
 	flag.IntVar(&o.Threads, "t", 10, "Number of concurrent threads")
 	flag.StringVar(&o.Mode, "m", "dns", "Directory/File mode (dir) or DNS mode (dns)")
@@ -137,7 +138,7 @@ func main() {
 
 	var plugin libgobuster.GobusterPlugin
 	plugin = libgobuster.GobusterDNS{}
-	gobuster, err := libgobuster.NewGobuster(ctx, o, plugin)
+	gobuster, err := libgobuster.NewGobuster(ctx, o, plugin, dnsServer)
 	if err != nil {
 		log.Fatalf("[!] %v", err)
 	}
@@ -156,8 +157,8 @@ func main() {
 		wg.Wait()
 	}
 
-	output := gobuster.GetProgress()
-	fmt.Println(output)
+	//output := gobuster.GetProgress()
+	//fmt.Println(output)
 
 	//read result and return
 }
