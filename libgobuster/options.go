@@ -42,6 +42,9 @@ type Options struct {
 	Quiet             bool
 	ShowIPs           bool
 	ShowCNAME         bool
+	ShowA             bool
+	ShowAAAA          bool
+	ShowMX            bool
 	InsecureSSL       bool
 	WildcardForced    bool
 	Verbose           bool
