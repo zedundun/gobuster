@@ -1,20 +1,18 @@
-package gobusterdir
+package libgobuster
 
 import (
 	"bytes"
 	"fmt"
 	"log"
 
-	//"github.com/OJ/gobuster/libgobuster"
 	"github.com/google/uuid"
-	"github.com/zedundun/gobuster/libgobuster"
 )
 
 // GobusterDir is the main type to implement the interface
 type GobusterDir struct{}
 
 // Setup is the setup implementation of gobusterdir
-func (d GobusterDir) Setup(g *libgobuster.Gobuster) error {
+func (d GobusterDir) Setup(g *Gobuster) error {
 	_, _, err := g.GetRequest(g.Opts.URL)
 	if err != nil {
 		return fmt.Errorf("unable to connect to %s: %v", g.Opts.URL, err)
@@ -40,7 +38,7 @@ func (d GobusterDir) Setup(g *libgobuster.Gobuster) error {
 }
 
 // Process is the process implementation of gobusterdir
-func (d GobusterDir) Process(g *libgobuster.Gobuster, word string) ([]libgobuster.Result, error) {
+func (d GobusterDir) Process(g *Gobuster, word string) ([]Result, error) {
 	suffix := ""
 	if g.Opts.UseSlash {
 		suffix = "/"
@@ -52,9 +50,9 @@ func (d GobusterDir) Process(g *libgobuster.Gobuster, word string) ([]libgobuste
 	if err != nil {
 		return nil, err
 	}
-	var ret []libgobuster.Result
+	var ret []Result
 	if dirResp != nil {
-		ret = append(ret, libgobuster.Result{
+		ret = append(ret, Result{
 			Entity: fmt.Sprintf("%s%s", word, suffix),
 			Status: *dirResp,
 			Size:   dirSize,
@@ -71,7 +69,7 @@ func (d GobusterDir) Process(g *libgobuster.Gobuster, word string) ([]libgobuste
 		}
 
 		if fileResp != nil {
-			ret = append(ret, libgobuster.Result{
+			ret = append(ret, Result{
 				Entity: file,
 				Status: *fileResp,
 				Size:   fileSize,
@@ -82,7 +80,7 @@ func (d GobusterDir) Process(g *libgobuster.Gobuster, word string) ([]libgobuste
 }
 
 // ResultToString is the to string implementation of gobusterdir
-func (d GobusterDir) ResultToString(g *libgobuster.Gobuster, r *libgobuster.Result) (*string, error) {
+func (d GobusterDir) ResultToString(g *Gobuster, r *Result) (*string, error) {
 	buf := &bytes.Buffer{}
 
 	// Prefix if we're in verbose mode

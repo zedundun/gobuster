@@ -1,4 +1,4 @@
-package gobusterdns
+package libgobuster
 
 import (
 	"bytes"
@@ -6,16 +6,14 @@ import (
 	"log"
 	"strings"
 
-	//"github.com/OJ/gobuster/libgobuster"
 	"github.com/google/uuid"
-	"github.com/zedundun/gobuster/libgobuster"
 )
 
 // GobusterDNS is the main type to implement the interface
 type GobusterDNS struct{}
 
 // Setup is the setup implementation of gobusterdns
-func (d GobusterDNS) Setup(g *libgobuster.Gobuster) error {
+func (d GobusterDNS) Setup(g *Gobuster) error {
 	// Resolve a subdomain sthat probably shouldn't exist
 	guid := uuid.New()
 	wildcardIps, err := g.DNSLookup(fmt.Sprintf("%s.%s", guid, g.Opts.URL))
@@ -41,13 +39,13 @@ func (d GobusterDNS) Setup(g *libgobuster.Gobuster) error {
 }
 
 // Process is the process implementation of gobusterdns
-func (d GobusterDNS) Process(g *libgobuster.Gobuster, word string) ([]libgobuster.Result, error) {
+func (d GobusterDNS) Process(g *Gobuster, word string) ([]Result, error) {
 	subdomain := fmt.Sprintf("%s.%s", word, g.Opts.URL)
 	ips, err := g.DNSLookup(subdomain)
-	var ret []libgobuster.Result
+	var ret []Result
 	if err == nil {
 		if !g.IsWildcard || !g.WildcardIps.ContainsAny(ips) {
-			result := libgobuster.Result{
+			result := Result{
 				Entity: subdomain,
 			}
 			if g.Opts.ShowIPs {
@@ -61,7 +59,7 @@ func (d GobusterDNS) Process(g *libgobuster.Gobuster, word string) ([]libgobuste
 			ret = append(ret, result)
 		}
 	} else if g.Opts.Verbose {
-		ret = append(ret, libgobuster.Result{
+		ret = append(ret, Result{
 			Entity: subdomain,
 			Status: 404,
 		})
@@ -70,7 +68,7 @@ func (d GobusterDNS) Process(g *libgobuster.Gobuster, word string) ([]libgobuste
 }
 
 // ResultToString is the to string implementation of gobusterdns
-func (d GobusterDNS) ResultToString(g *libgobuster.Gobuster, r *libgobuster.Result) (*string, error) {
+func (d GobusterDNS) ResultToString(g *Gobuster, r *Result) (*string, error) {
 	buf := &bytes.Buffer{}
 
 	if r.Status == 404 {

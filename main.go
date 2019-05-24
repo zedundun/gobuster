@@ -28,8 +28,6 @@ import (
 	//"syscall"
 	"time"
 
-	//"github.com/OJ/gobuster/gobusterdir"
-	"github.com/zedundun/gobuster/gobusterdns"
 	//"golang.org/x/crypto/ssh/terminal"
 	"github.com/zedundun/gobuster/libgobuster"
 )
@@ -138,7 +136,7 @@ func main() {
 	defer cancel()
 
 	var plugin libgobuster.GobusterPlugin
-	plugin = gobusterdns.GobusterDNS{}
+	plugin = libgobuster.GobusterDNS{}
 	gobuster, err := libgobuster.NewGobuster(ctx, o, plugin)
 	if err != nil {
 		log.Fatalf("[!] %v", err)
@@ -159,7 +157,7 @@ func main() {
 	}
 
 	output := gobuster.GetProgress()
-	fmt.Println("progress:", output)
+	fmt.Println(output)
 
 	//read result and return
 }

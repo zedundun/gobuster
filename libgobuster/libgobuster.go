@@ -27,6 +27,7 @@ type ResultToStringFunc func(*Gobuster, *Result) (*string, error)
 
 // Gobuster is the main object when creating a new run
 type Gobuster struct {
+	resolver         *net.Resolver
 	Opts             *Options
 	http             *httpClient
 	WildcardIps      stringSet
