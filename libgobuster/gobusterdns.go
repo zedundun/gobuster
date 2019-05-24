@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/google/uuid"
+	//"github.com/google/uuid"
 )
 
 // GobusterDNS is the main type to implement the interface
@@ -30,7 +30,7 @@ func (d GobusterDNS) Setup(g *Gobuster) error {
 
 	if !g.Opts.Quiet {
 		// Provide a warning if the base domain doesn't resolve (in case of typo)
-		_, err = g.DNSLookup(g.Opts.URL)
+		_, err := g.DNSLookup(g.Opts.URL)
 		if err != nil {
 			// Not an error, just a warning. Eg. `yp.to` doesn't resolve, but `cr.py.to` does!
 			log.Printf("[-] Unable to validate base domain: %s", g.Opts.URL)

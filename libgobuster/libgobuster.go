@@ -149,12 +149,12 @@ func (g *Gobuster) GetRequest(url string) (*int, *int64, error) {
 
 // DNSLookup looks up a domain via system default DNS servers
 func (g *Gobuster) DNSLookup(domain string) ([]string, error) {
-	return g.resolver.LookupHost(domain)
+	return g.resolver.LookupHost(context.Background(), domain)
 }
 
 // DNSLookupCname looks up a CNAME record via system default DNS servers
 func (g *Gobuster) DNSLookupCname(domain string) (string, error) {
-	return g.resolver.LookupCNAME(domain)
+	return g.resolver.LookupCNAME(context.Background(), domain)
 }
 
 func (g *Gobuster) worker(wordChan <-chan string, wg *sync.WaitGroup) {
