@@ -159,7 +159,7 @@ func (g *Gobuster) DNSLookupCname(domain string) (string, error) {
 
 // DNSLookupCname looks up a CNAME record via system default DNS servers
 func (g *Gobuster) DNSLookupMX(domain string) ([]string, error) {
-	mxs, err = g.resolver.LookupMX(context.Background(), domain)
+	mxs, err := g.resolver.LookupMX(context.Background(), domain)
 	if err != nil {
 		return nil, err
 	}

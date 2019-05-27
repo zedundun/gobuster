@@ -56,7 +56,7 @@ func (d GobusterDNS) Process(g *Gobuster, word string) ([]Result, error) {
 	}
 	if g.Opts.ShowIPs {
 		for _, ip := range ips {
-			if ip.Contains(".") { //ipv4
+			if strings.Contains(ip, ".") { //ipv4
 				if g.Opts.ShowA {
 					result := Result{
 						Entity:  subdomain,
@@ -93,7 +93,7 @@ func (d GobusterDNS) Process(g *Gobuster, word string) ([]Result, error) {
 	if g.Opts.ShowMX {
 		mxs, err := g.DNSLookupMX(subdomain)
 		if err == nil {
-			for _, mx = range mxs {
+			for _, mx := range mxs {
 				result := Result{
 					Entity:  subdomain,
 					Extra:   mx,
