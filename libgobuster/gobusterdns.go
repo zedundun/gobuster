@@ -99,6 +99,7 @@ func (d GobusterDNS) Process(g *Gobuster, word string) ([]Result, error) {
 					Extra:   mx,
 					DnsType: "MX",
 				}
+				ret = append(ret, result)
 			}
 		} else {
 			fmt.Printf("lookup MX %s error:%s\n", subdomain, err)
