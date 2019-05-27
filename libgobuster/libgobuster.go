@@ -157,6 +157,20 @@ func (g *Gobuster) DNSLookupCname(domain string) (string, error) {
 	return g.resolver.LookupCNAME(context.Background(), domain)
 }
 
+// DNSLookupCname looks up a CNAME record via system default DNS servers
+func (g *Gobuster) DNSLookupMX(domain string) ([]string, error) {
+	mxs, err = g.resolver.LookupMX(context.Background(), domain)
+	if err != nil {
+		return nil, err
+	}
+
+	var rst []string
+	for _, mx := range mxs {
+		rst = append(rst, mx.Host)
+	}
+	return rst, nil
+}
+
 func (g *Gobuster) worker(wordChan <-chan string, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for {

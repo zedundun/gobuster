@@ -109,11 +109,11 @@ func main() {
 	flag.StringVar(&o.Mode, "m", "dns", "Directory/File mode (dir) or DNS mode (dns)")
 	flag.StringVar(&o.Wordlist, "w", "wordlist.txt", "Path to the wordlist")
 	flag.StringVar(&o.URL, "u", "", "The target URL or Domain")
-	flag.BoolVar(&o.ShowIPs, "i", true, "Show IP addresses (dns mode only)")
-	flag.BoolVar(&o.ShowCNAME, "CNAME", true, "Show CNAME records (dns mode only)")
-	flag.BoolVar(&o.ShowA, "A", true, "Show A records (dns mode only)")
-	flag.BoolVar(&o.ShowAAAA, "AAAA", true, "Show AAAA records (dns mode only)")
-	flag.BoolVar(&o.ShowMX, "MX", true, "Show MX records (dns mode only)")
+	flag.BoolVar(&o.ShowIPs, "i", false, "Show IP addresses (dns mode only)")
+	flag.BoolVar(&o.ShowCNAME, "cn", false, "Show CNAME records (dns mode only)")
+	flag.BoolVar(&o.ShowA, "a", false, "Show A records (dns mode only)")
+	flag.BoolVar(&o.ShowAAAA, "aaaa", false, "Show AAAA records (dns mode only)")
+	flag.BoolVar(&o.ShowMX, "mx", false, "Show MX records (dns mode only)")
 
 	flag.BoolVar(&o.Verbose, "v", false, "Verbose output (errors)")
 	flag.BoolVar(&o.Quiet, "q", false, "Don't print the banner and other noise")
@@ -136,6 +136,9 @@ func main() {
 	flag.BoolVar(&o.NoProgress, "np", false, "Don't display progress")
 
 	flag.Parse()
+	if o.ShowA || o.ShowAAAA {
+		o.ShowIPs = true
+	}
 	fmt.Println(dnsServer)
 	fmt.Println(outputFilename)
 	fmt.Println(o)

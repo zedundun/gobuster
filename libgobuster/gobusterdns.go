@@ -14,6 +14,7 @@ type GobusterDNS struct{}
 
 // Setup is the setup implementation of gobusterdns
 func (d GobusterDNS) Setup(g *Gobuster) error {
+
 	/*
 		// Resolve a subdomain sthat probably shouldn't exist
 		guid := uuid.New()
@@ -43,32 +44,67 @@ func (d GobusterDNS) Setup(g *Gobuster) error {
 // Process is the process implementation of gobusterdns
 func (d GobusterDNS) Process(g *Gobuster, word string) ([]Result, error) {
 	subdomain := fmt.Sprintf("%s.%s", word, g.Opts.URL)
-	fmt.Println(subdomain)
-	fmt.Println(g.Opts)
-	fmt.Println(dnsServer)
-	ips, err := g.DNSLookup(subdomain)
+	fmt.Println("try ", subdomain)
 	var ret []Result
-	if err == nil {
-		if !g.IsWildcard || !g.WildcardIps.ContainsAny(ips) {
-			result := Result{
-				Entity: subdomain,
-			}
-			if g.Opts.ShowIPs {
-				result.Extra = strings.Join(ips, ", ")
-			} else if g.Opts.ShowCNAME {
-				cname, err := g.DNSLookupCname(subdomain)
-				if err == nil {
-					result.Extra = cname
+
+	ips, err := g.DNSLookup(subdomain) //return ip address contain ipv4 and ipv6
+	if err != nil {
+		if g.Opts.Verbose {
+			fmt.Printf("lookup host %s error:%s\n", subdomain, err)
+		}
+		return nil, err
+	}
+	if g.Opts.ShowIPs {
+		for _, ip := range ips {
+			if ip.Contains(".") { //ipv4
+				if g.Opts.ShowA {
+					result := Result{
+						Entity:  subdomain,
+						Extra:   ip,
+						DnsType: "A",
+					}
+					ret = append(ret, result)
+				}
+			} else { //ipv6
+				if g.Opts.ShowAAAA {
+					result := Result{
+						Entity:  subdomain,
+						Extra:   ip,
+						DnsType: "AAAA",
+					}
+					ret = append(ret, result)
 				}
 			}
-			ret = append(ret, result)
 		}
-	} else if g.Opts.Verbose {
-		ret = append(ret, Result{
-			Entity: subdomain,
-			Status: 404,
-		})
 	}
+	if g.Opts.ShowCNAME {
+		cname, err := g.DNSLookupCname(subdomain)
+		if err == nil {
+			result := Result{
+				Entity:  subdomain,
+				Extra:   cname,
+				DnsType: "CNAME",
+			}
+			ret = append(ret, result)
+		} else {
+			fmt.Printf("lookup CNAME %s error:%s\n", subdomain, err)
+		}
+	}
+	if g.Opts.ShowMX {
+		mxs, err := g.DNSLookupMX(subdomain)
+		if err == nil {
+			for _, mx = range mxs {
+				result := Result{
+					Entity:  subdomain,
+					Extra:   mx,
+					DnsType: "MX",
+				}
+			}
+		} else {
+			fmt.Printf("lookup MX %s error:%s\n", subdomain, err)
+		}
+	}
+
 	return ret, nil
 }
 
@@ -80,16 +116,8 @@ func (d GobusterDNS) ResultToString(g *Gobuster, r *Result) (*string, error) {
 		if _, err := fmt.Fprintf(buf, "Missing: %s\n", r.Entity); err != nil {
 			return nil, err
 		}
-	} else if g.Opts.ShowIPs {
-		if _, err := fmt.Fprintf(buf, "Found: %s [%s]\n", r.Entity, r.Extra); err != nil {
-			return nil, err
-		}
-	} else if g.Opts.ShowCNAME {
-		if _, err := fmt.Fprintf(buf, "Found: %s [%s]\n", r.Entity, r.Extra); err != nil {
-			return nil, err
-		}
 	} else {
-		if _, err := fmt.Fprintf(buf, "Found: %s\n", r.Entity); err != nil {
+		if _, err := fmt.Fprintf(buf, "Found: %s [%s] [%s]\n", r.Entity, r.Extra, r.DnsType); err != nil {
 			return nil, err
 		}
 	}

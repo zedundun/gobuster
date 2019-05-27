@@ -21,7 +21,6 @@ func (d GobusterDir) Setup(g *Gobuster) error {
 	guid := uuid.New()
 	url := fmt.Sprintf("%s%s", g.Opts.URL, guid)
 	wildcardResp, _, err := g.GetRequest(url)
-
 	if err != nil {
 		return err
 	}
