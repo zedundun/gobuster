@@ -67,7 +67,7 @@ func (opt *Options) validate() *multierror.Error {
 		errorList = multierror.Append(errorList, fmt.Errorf("Mode (-m): Invalid value: %s", opt.Mode))
 	}
 
-	if opt.Threads < 0 {
+	if opt.Threads < 0 || opt.Threads > 20 {
 		errorList = multierror.Append(errorList, fmt.Errorf("Threads (-t): Invalid value: %d", opt.Threads))
 	}
 

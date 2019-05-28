@@ -12,6 +12,11 @@ import (
 // GobusterDNS is the main type to implement the interface
 type GobusterDNS struct{}
 
+// trimSuffixPoint 移除完整域名尾部的 .
+func trimSuffixPoint(domain string) string {
+	return strings.TrimSuffix(domain, ".")
+}
+
 // Setup is the setup implementation of gobusterdns
 func (d GobusterDNS) Setup(g *Gobuster) error {
 
@@ -43,15 +48,20 @@ func (d GobusterDNS) Setup(g *Gobuster) error {
 
 // Process is the process implementation of gobusterdns
 func (d GobusterDNS) Process(g *Gobuster, word string) ([]Result, error) {
-	subdomain := fmt.Sprintf("%s.%s", word, g.Opts.URL)
+	var subdomain string
+	if word == "." {
+		subdomain = g.Opts.URL
+	} else {
+		subdomain = fmt.Sprintf("%s.%s", word, g.Opts.URL)
+	}
 	fmt.Println("try ", subdomain)
-	var ret []Result
 
+	var ret []Result
 	ips, err := g.DNSLookup(subdomain) //return ip address contain ipv4 and ipv6
 	if err != nil {
-		if g.Opts.Verbose {
-			fmt.Printf("lookup host %s error:%s\n", subdomain, err)
-		}
+		//if g.Opts.Verbose {
+		//	fmt.Printf("lookup host %s error:%s\n", subdomain, err)
+		//}
 		return nil, err
 	}
 	if g.Opts.ShowIPs {
@@ -82,7 +92,7 @@ func (d GobusterDNS) Process(g *Gobuster, word string) ([]Result, error) {
 		if err == nil {
 			result := Result{
 				Entity:  subdomain,
-				Extra:   cname,
+				Extra:   trimSuffixPoint(cname),
 				DnsType: "CNAME",
 			}
 			ret = append(ret, result)
