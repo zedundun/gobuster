@@ -84,7 +84,7 @@ func NewGobuster(c context.Context, opts *Options, plugin GobusterPlugin, server
 	} else {
 		dnsServer = server
 		g.resolver = &net.Resolver{
-			PreferGo: true,
+			PreferGo: false,
 			Dial:     dialer,
 		}
 	}

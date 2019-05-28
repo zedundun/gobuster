@@ -90,12 +90,14 @@ func (d GobusterDNS) Process(g *Gobuster, word string) ([]Result, error) {
 	if g.Opts.ShowCNAME {
 		cname, err := g.DNSLookupCname(subdomain)
 		if err == nil {
-			result := Result{
-				Entity:  subdomain,
-				Extra:   trimSuffixPoint(cname),
-				DnsType: "CNAME",
+			if trimSuffixPoint(cname) != subdomain {
+				result := Result{
+					Entity:  subdomain,
+					Extra:   trimSuffixPoint(cname),
+					DnsType: "CNAME",
+				}
+				ret = append(ret, result)
 			}
-			ret = append(ret, result)
 		} else {
 			fmt.Printf("lookup CNAME %s error:%s\n", subdomain, err)
 		}
@@ -106,7 +108,7 @@ func (d GobusterDNS) Process(g *Gobuster, word string) ([]Result, error) {
 			for _, mx := range mxs {
 				result := Result{
 					Entity:  subdomain,
-					Extra:   mx,
+					Extra:   trimSuffixPoint(mx),
 					DnsType: "MX",
 				}
 				ret = append(ret, result)
