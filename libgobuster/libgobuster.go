@@ -237,9 +237,9 @@ func (g *Gobuster) getWordlist() (*bufio.Scanner, error) {
 // set of settings from the command line.
 func (g *Gobuster) Start() error {
 	fmt.Println("start")
-	if err := g.plugin.Setup(g); err != nil {
-		return err
-	}
+	//if err := g.plugin.Setup(g); err != nil {
+	//	return err
+	//}
 
 	var workerGroup sync.WaitGroup
 	workerGroup.Add(g.Opts.Threads)
@@ -261,7 +261,7 @@ Scan:
 	for _, domain := range g.Opts.Domains {
 		scanner, err := g.getWordlist()
 		if err != nil {
-			return err
+			break Scan
 		}
 
 		for scanner.Scan() {
