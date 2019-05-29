@@ -28,6 +28,7 @@ type Options struct {
 	StatusCodesParsed intSet
 	Threads           int
 	URL               string
+	Domains           []string
 	UserAgent         string
 	Username          string
 	Wordlist          string

@@ -257,7 +257,7 @@ func (g *Gobuster) Start() error {
 	}
 
 Scan:
-	for _,domain:=g.Opts.Domains{
+	for _,domain:=rang g.Opts.Domains{
 		scanner,err:=g.getWordlist()
 		if err!=nil{
 			return err
