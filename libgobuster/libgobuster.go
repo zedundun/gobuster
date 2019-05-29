@@ -257,13 +257,13 @@ func (g *Gobuster) Start() error {
 	}
 
 Scan:
-	for _,domain:=rang g.Opts.Domains{
-		scanner,err:=g.getWordlist()
-		if err!=nil{
+	for _, domain := range g.Opts.Domains {
+		scanner, err := g.getWordlist()
+		if err != nil {
 			return err
 		}
-		
-		for scanner.Scan(){
+
+		for scanner.Scan() {
 			select {
 			case <-g.context.Done():
 				break Scan
@@ -271,11 +271,11 @@ Scan:
 				word := strings.TrimSpace(scanner.Text())
 				// Skip "comment" (starts with #), as well as empty lines
 				if !strings.HasPrefix(word, "#") && len(word) > 0 {
-					if word == "."{
-						wordChan<-domain
+					if word == "." {
+						wordChan <- domain
 					} else {
 						subdomain := fmt.Sprintf("%s.%s", word, domain)
-						wordChan<-subdomain
+						wordChan <- subdomain
 					}
 				}
 			}
