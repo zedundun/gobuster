@@ -211,6 +211,7 @@ func (g *Gobuster) countWords() error {
 
 	g.requestsExpected = lines * len(g.Opts.Domains)
 	g.requestsIssued = 0
+	return nil
 }
 
 func (g *Gobuster) getWordlist() (*bufio.Scanner, error) {
@@ -251,7 +252,7 @@ func (g *Gobuster) Start() error {
 		go g.worker(wordChan, &workerGroup)
 	}
 
-	err = g.countWords()
+	err := g.countWords()
 	if err != nil {
 		return err
 	}
