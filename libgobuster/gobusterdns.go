@@ -49,11 +49,7 @@ func (d GobusterDNS) Setup(g *Gobuster) error {
 // Process is the process implementation of gobusterdns
 func (d GobusterDNS) Process(g *Gobuster, word string) ([]Result, error) {
 	var subdomain string
-	if word == "." {
-		subdomain = g.Opts.URL
-	} else {
-		subdomain = fmt.Sprintf("%s.%s", word, g.Opts.URL)
-	}
+	subdomain = word
 	fmt.Println("try ", subdomain)
 
 	var ret []Result
@@ -130,7 +126,7 @@ func (d GobusterDNS) ResultToString(g *Gobuster, r *Result) (*string, error) {
 			return nil, err
 		}
 	} else {
-		if _, err := fmt.Fprintf(buf, "Found: %s [%s] [%s]\n", r.Entity, r.Extra, r.DnsType); err != nil {
+		if _, err := fmt.Fprintf(buf, "%s [%s] [%s]\n", r.Entity, r.Extra, r.DnsType); err != nil {
 			return nil, err
 		}
 	}

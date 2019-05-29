@@ -198,6 +198,21 @@ func (g *Gobuster) worker(wordChan <-chan string, wg *sync.WaitGroup) {
 	}
 }
 
+func (g *Gobuster) countWords() error {
+	wordlist, err := os.Open(g.Opts.Wordlist)
+	if err != nil {
+		return fmt.Errorf("failed to open wordlist: %v", err)
+	}
+
+	lines, err := lineCounter(wordlist)
+	if err != nil {
+		return fmt.Errorf("failed to get number of lines from wordlist: %v", err)
+	}
+
+	g.requestsExpected = lines * len(g.Opts.Domains)
+	g.requestsIssued = 0
+}
+
 func (g *Gobuster) getWordlist() (*bufio.Scanner, error) {
 	if g.Opts.Wordlist == "-" {
 		// Read directly from stdin
@@ -208,14 +223,6 @@ func (g *Gobuster) getWordlist() (*bufio.Scanner, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to open wordlist: %v", err)
 	}
-
-	lines, err := lineCounter(wordlist)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get number of lines: %v", err)
-	}
-
-	g.requestsExpected = lines
-	g.requestsIssued = 0
 
 	// rewind wordlist
 	_, err = wordlist.Seek(0, 0)
@@ -244,24 +251,37 @@ func (g *Gobuster) Start() error {
 		go g.worker(wordChan, &workerGroup)
 	}
 
-	scanner, err := g.getWordlist()
+	err = g.countWords()
 	if err != nil {
 		return err
 	}
 
 Scan:
-	for scanner.Scan() {
-		select {
-		case <-g.context.Done():
-			break Scan
-		default:
-			word := strings.TrimSpace(scanner.Text())
-			// Skip "comment" (starts with #), as well as empty lines
-			if !strings.HasPrefix(word, "#") && len(word) > 0 {
-				wordChan <- word
+	for _,domain:=g.Opts.Domains{
+		scanner,err:=g.getWordlist()
+		if err!=nil{
+			return err
+		}
+		
+		for scanner.Scan(){
+			select {
+			case <-g.context.Done():
+				break Scan
+			default:
+				word := strings.TrimSpace(scanner.Text())
+				// Skip "comment" (starts with #), as well as empty lines
+				if !strings.HasPrefix(word, "#") && len(word) > 0 {
+					if word == "."{
+						wordChan<-domain
+					} else {
+						subdomain := fmt.Sprintf("%s.%s", word, domain)
+						wordChan<-subdomain
+					}
+				}
 			}
 		}
 	}
+
 	close(wordChan)
 	workerGroup.Wait()
 	close(g.resultChan)
