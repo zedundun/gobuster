@@ -178,6 +178,7 @@ func (g *Gobuster) worker(wordChan <-chan string, wg *sync.WaitGroup) {
 	for {
 		select {
 		case <-g.context.Done():
+			fmt.Println("worker out")
 			return
 		case word, ok := <-wordChan:
 			// worker finished
@@ -269,6 +270,7 @@ Scan:
 		for scanner.Scan() {
 			select {
 			case <-g.context.Done():
+				fmt.Println("scan out")
 				break Scan
 			default:
 				word := strings.TrimSpace(scanner.Text())
