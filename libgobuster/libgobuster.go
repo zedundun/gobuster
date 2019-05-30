@@ -131,6 +131,8 @@ func (g *Gobuster) GetProgress() string {
 		// only print status if we already read in the wordlist
 	} else if g.requestsExpected > 0 {
 		output = fmt.Sprintf("Progress: %d / %d (%3.2f%%)", g.requestsIssued, g.requestsExpected, float32(g.requestsIssued)*100.0/float32(g.requestsExpected))
+	} else {
+		output = ""
 	}
 	g.mu.RUnlock()
 	return output
@@ -241,6 +243,11 @@ func (g *Gobuster) Start() error {
 	//	return err
 	//}
 
+	err := g.countWords()
+	if err != nil {
+		return err
+	}
+
 	var workerGroup sync.WaitGroup
 	workerGroup.Add(g.Opts.Threads)
 
@@ -250,11 +257,6 @@ func (g *Gobuster) Start() error {
 	// specified.
 	for i := 0; i < g.Opts.Threads; i++ {
 		go g.worker(wordChan, &workerGroup)
-	}
-
-	err := g.countWords()
-	if err != nil {
-		return err
 	}
 
 Scan:
