@@ -138,11 +138,6 @@ func (g *Gobuster) GetProgress() string {
 	return output
 }
 
-// ClearProgress removes the last status line from stderr
-func (g *Gobuster) ClearProgress() {
-	fmt.Fprint(os.Stderr, resetTerminal())
-}
-
 // GetRequest issues a GET request to the target and returns
 // the status code, length and an error
 func (g *Gobuster) GetRequest(url string) (*int, *int64, error) {
@@ -178,7 +173,6 @@ func (g *Gobuster) worker(wordChan <-chan string, wg *sync.WaitGroup) {
 	for {
 		select {
 		case <-g.context.Done():
-			fmt.Println("worker out")
 			return
 		case word, ok := <-wordChan:
 			// worker finished
@@ -270,7 +264,7 @@ Scan:
 		for scanner.Scan() {
 			select {
 			case <-g.context.Done():
-				fmt.Println("scan out")
+				//fmt.Println("scan out")
 				break Scan
 			default:
 				word := strings.TrimSpace(scanner.Text())
