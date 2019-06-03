@@ -37,7 +37,7 @@ type Gobuster struct {
 	requestsExpected int
 	requestsIssued   int
 	mu               *sync.RWMutex
-	plugin           GobusterPlugin
+	Plugin           GobusterPlugin
 	IsWildcard       bool
 	resultChan       chan Result
 	errorChan        chan error
@@ -73,7 +73,7 @@ func NewGobuster(c context.Context, opts *Options, plugin GobusterPlugin, server
 	}
 	g.http = h
 
-	g.plugin = plugin
+	g.Plugin = plugin
 	g.mu = new(sync.RWMutex)
 
 	g.resultChan = make(chan Result)
@@ -182,7 +182,7 @@ func (g *Gobuster) worker(wordChan <-chan string, wg *sync.WaitGroup) {
 			}
 			g.incrementRequests()
 			// Mode-specific processing
-			res, err := g.plugin.Process(g, word)
+			res, err := g.Plugin.Process(g, word)
 			if err != nil {
 				// do not exit and continue
 				g.errorChan <- err
@@ -235,7 +235,7 @@ func (g *Gobuster) getWordlist() (*bufio.Scanner, error) {
 // set of settings from the command line.
 func (g *Gobuster) Start() error {
 	fmt.Println("start")
-	//if err := g.plugin.Setup(g); err != nil {
+	//if err := g.Plugin.Setup(g); err != nil {
 	//	return err
 	//}
 
