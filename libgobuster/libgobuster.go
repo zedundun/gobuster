@@ -241,6 +241,8 @@ func (g *Gobuster) Start() error {
 
 	err := g.countWords()
 	if err != nil {
+		close(g.resultChan)
+		close(g.errorChan)
 		return err
 	}
 
